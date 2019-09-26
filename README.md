@@ -4,6 +4,9 @@ This is [mayavi](https://github.com/enthought/mayavi) based 3D visualization too
 
 ## Demo
 
+Click on the image below to play the Youtube video:
+
+[![demo preview](thumbnail.png)](https://www.youtube.com/watch?v=ivmiN4zvRTo)
 
 ## Requirements
 
