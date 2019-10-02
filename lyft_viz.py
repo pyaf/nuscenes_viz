@@ -42,11 +42,10 @@ def get_lidar_points(lyftdata, lidar_token):
 
 
 
-def plot_lidar_with_depth(lyftdata, idx):
-    '''plot sample corresponding to given index: `idx` '''
+def plot_lidar_with_depth(lyftdata, sample):
+    '''plot given sample'''
 
-    sample = lyftdata.sample[idx]
-    print(f'Plotting sample: index: {idx}, token: {sample["token"]}')
+    print(f'Plotting sample, token: {sample["token"]}')
     lidar_token = sample["data"]["LIDAR_TOP"]
     pc = get_lidar_points(lyftdata, lidar_token)
     _, boxes, _ = lyftdata.get_sample_data(
@@ -65,11 +64,24 @@ def plot_lidar_with_depth(lyftdata, idx):
     mlab.show(1)
 
 
-def plot_samples_one_by_one(lyftdata):
-    '''Plot samples one by one, iterating over lyftdata.sample'''
-    for idx in range(len(lyftdata.sample)):
-        plot_lidar_with_depth(lyftdata, idx)
-        #import pdb; pdb.set_trace()
+def plot_one_sample(lyftdata, sample_token):
+    ''' plots only one sample's top lidar point cloud '''
+    sample = lyftdata.get('sample', sample_token)
+    plot_lidar_with_depth(lyftdata, sample)
+    input_str=input('Press any key to terminate \n')
+    mlab.close()
+    for proc in psutil.process_iter():
+        if proc.name() == "display":
+            proc.kill()
+
+
+def plot_one_scene(lyftdata, scene_token):
+    scene = lyftdata.get('scene', scene_token)
+    token = scene['first_sample_token']
+    while token != '':
+        sample = lyftdata.get('sample', token)
+        plot_lidar_with_depth(lyftdata, sample)
+        token = sample['next']
         input_str=input('Press any key to continue to next sample, enter "kill" to terminate \n')
         mlab.close()
         for proc in psutil.process_iter():
@@ -80,14 +92,6 @@ def plot_samples_one_by_one(lyftdata):
             break
 
 
-def plot_one_sample(lyftdata, idx):
-    ''' plots only one sample's top lidar point cloud '''
-    plot_lidar_with_depth(lyftdata, idx)
-    input_str=input('Press any key to terminate \n')
-    mlab.close()
-    for proc in psutil.process_iter():
-        if proc.name() == "display":
-            proc.kill()
 
 
 if __name__=='__main__':
@@ -96,8 +100,8 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(description='Mayavi visualization of nuscenes dataset')
     parser.add_argument('-d', '--dataroot', type=str, default="./data/lyft/", metavar='N',
                         help='data directory path  (default: ./data/lyft/)')
-    parser.add_argument('-i', '--idx', type=int, default=None, metavar='N',
-                        help='input  (default: ./data/lyft/)')
+    parser.add_argument('--scene', type=str, default=None, metavar='N', help='scene token')
+    parser.add_argument('--sample', type=str, default=None, metavar='N', help='sample token')
 
     args = parser.parse_args()
     dataroot = Path(args.dataroot)
@@ -105,8 +109,8 @@ if __name__=='__main__':
     print('Loading dataset with Lyft SDK ...')
     lyftdata = LyftDataset(data_path=str(dataroot), json_path=str(json_path), verbose=True)
     print('Done!, starting 3d visualization ...')
-    if args.idx is None:
-        plot_samples_one_by_one(lyftdata)
-    else:
-        plot_one_sample(lyftdata, args.idx)
 
+    if args.scene:
+        plot_one_scene(lyftdata, args.scene)
+    elif args.sample:
+        plot_one_sample(lyftdata, args.sample)

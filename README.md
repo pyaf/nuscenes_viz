@@ -4,7 +4,7 @@ This is [mayavi](https://github.com/enthought/mayavi) based 3D visualization too
 
 ## Demo
 
-Click on the image below to play the Youtube video:
+The demo video is of the older version of this tool, some functionalities have changed since then.
 
 [![demo preview](thumbnail.png)](https://www.youtube.com/watch?v=ivmiN4zvRTo)
 
@@ -45,16 +45,17 @@ Once you have the required directory structure present in `dataroot` folder, we 
 ### let's run the visualization script
 
 
-* To plot samples one by one, iterating over `lyftdata.sample`:
+* To plot samples of a scene one by one, we need scene token:
+
 ```
-python lyft_viz.py -d ./dataroot/
+python lyft_viz.py -d ./dataroot/ --scene da4ed9e02f64c544f4f1f10c6738216dcb0e6b0d50952e158e5589854af9f100
 ```
 
-* To plot sample of any specific index (say 15th) in `lyftdata.sample` list:
-```
-python lyft_viz.py -d ./dataroot/ -i 15
-```
+* To plot a specific sample, use the sample token as:
 
+```
+python lyft_viz.py -d ./dataroot/ --sample 24b0962e44420e6322de3f25d9e4e5cc3c7a348ec00bfa69db21517e4ca92cc8
+```
 
 
 ## References
